@@ -6,7 +6,14 @@ from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 st.set_page_config(layout="wide")
 
-start = 0
+# Function to reset session state
+def reset_app():
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+
+# Check if the reset button was clicked
+if st.button("Restart App"):
+    reset_app()
 
 df = pd.read_csv("CompanyDetails.csv")
 df = df.dropna()
@@ -242,11 +249,14 @@ if len(st.session_state['items']) > 0:
             DetailsDataframe.drop(corruptIndex, axis=0, inplace=True)
             DetailsDataframe = DetailsDataframe.reset_index(drop=True)
             
-            #Hanling next all entries
-            new_corrupt = DetailsDataframe.index[DetailsDataframe.notnull().all(axis=1)].tolist()
-            new_corrupt = [i+1 for i in new_corrupt]
-            DetailsDataframe.drop(new_corrupt, axis=0, inplace=True)
-            DetailsDataframe = DetailsDataframe.reset_index(drop=True)
+            try:
+                #Hanling next all entries
+                new_corrupt = DetailsDataframe.index[DetailsDataframe.notnull().all(axis=1)].tolist()
+                new_corrupt = [i+1 for i in new_corrupt]
+                DetailsDataframe.drop(new_corrupt, axis=0, inplace=True)
+                DetailsDataframe = DetailsDataframe.reset_index(drop=True)
+            except Exception as e:
+                st.write("Next Entry will be corrupt but don't worry, It;ll be handle in Final quotation (अगली प्रविष्टि भ्रष्ट हो जाएगी लेकिन चिंता न करें, इसे अंतिम उद्धरण में संभाल लिया जाएगा)")
             st.write(DetailsDataframe)
             
         with col3:
